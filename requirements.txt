@@ -10,3 +10,4 @@ modelscope
 # flash-attn==2.8.0.post2  # to speed up inference need flash-attn
 accelerate
 cairosvg
+torchvision

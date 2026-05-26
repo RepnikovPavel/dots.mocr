@@ -1,3 +1,11 @@
+```sh
+pip install --no-build-isolation --break-system-packages -e . --verbose --verbose
+```
+```sh
+pip install --no-build-isolation --break-system-packages flash-attn==2.8.0.post2 --verbose --verbose
+```
+
+
 <div align="left">
 
 <h1 align="left">
