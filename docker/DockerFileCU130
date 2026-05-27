@@ -43,5 +43,5 @@ ENV CUDA_INCLUDE_DIRS=/usr/local/cuda-$CUDAV/targets/x86_64-linux/include/ \
     LD_LIBRARY_PATH="/usr/src/tensorrt/lib:$LD_LIBRARY_PATH" \
     TENSORRT_PATH=/usr/src/tensorrt
 
-RUN apt-get update && apt-get install -y wget
+RUN apt-get update && apt-get install -y wget && apt install -y imagemagick exiftool
 WORKDIR /app

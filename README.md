@@ -1,8 +1,39 @@
 ```sh
+# fork setup
+git fetch origin tag v4.57.6
+git checkout -B dotsmocr v4.57.6
+```
+```sh
+# how to download my fork
+git submodule add -b dotsmocr https://github.com/RepnikovPavel/transformers.git transformers
+```
+
+```sh
 pip install --no-build-isolation --break-system-packages -e . --verbose --verbose
 ```
 ```sh
 pip install --no-build-isolation --break-system-packages flash-attn==2.8.0.post2 --verbose --verbose
+```
+
+no code modifications:
+remove from json file ```config.json```    
+```json
+    "auto_map": {
+        "AutoConfig": "configuration_dots.DotsOCRConfig",
+        "AutoModelForCausalLM": "modeling_dots_ocr.DotsOCRForCausalLM"
+        },
+```
+preprocessor_config.json:
+```configuration_dots.DotsVLProcessor``` -> ```configuration_dots_ocr.DotsVLProcessor```
+
+
+# inference
+```sh
+python3 dots_mocr/local_parser.py \
+--ckpt=/mnt/nvme/huggingface/models--rednote-hilab--dots.mocr/snapshots/fork \
+--input_path=/mnt/nvme/ocr_data/ko_2025/ko_2025_pages-to-jpg-0003.jpg \
+--prompt=prompt_layout_all_en \
+--output=./tmp
 ```
 
 

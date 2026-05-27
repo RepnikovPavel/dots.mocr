@@ -197,3 +197,4 @@ playground/
 outputs
 dummy.*
 TensorRT-10.16.1.11.Linux.x86_64-gnu.cuda-13.2.tar.gz
+tmp
