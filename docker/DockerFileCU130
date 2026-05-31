@@ -2,7 +2,6 @@
 FROM nvidia/cuda:13.2.1-cudnn-devel-ubuntu24.04 AS trt-builder
 COPY TensorRT-10.16.1.11.Linux.x86_64-gnu.cuda-13.2.tar.gz /tmp/
 RUN mkdir -p /usr/src/tensorrt && \
-    # --strip-components=1 убирает корневую папку из архива (TensorRT-10.x.x.x)
     tar -xzf /tmp/TensorRT-10.16.1.11.Linux.x86_64-gnu.cuda-13.2.tar.gz -C /usr/src/tensorrt --strip-components=1 && \
     rm /tmp/TensorRT-10.16.1.11.Linux.x86_64-gnu.cuda-13.2.tar.gz
 
@@ -19,16 +18,21 @@ RUN DEBIAN_FRONTEND=noninteractive && \
         libglu1-mesa libglu1-mesa-dev libssl-dev openssl libbz2-dev \
         libboost-all-dev ninja-build \
         '^libxcb.*-dev' libx11-xcb-dev libxkbcommon-dev libxkbcommon-x11-dev \
-        libxrender-dev libxrender1 tree gnuplot python3-tk htop sshfs graphviz && \
+        libxrender-dev libxrender1 tree gnuplot python3-tk htop sshfs graphviz \
+        wget imagemagick exiftool libopenmpi-dev libzmq3-dev git-lfs && \
+    git lfs install && \
     rm -rf /var/lib/apt/lists/* && \
     python3 -m pip install --no-cache-dir --break-system-packages simple-colors wheel
 
 # Копируем ТОЛЬКО распакованные файлы TensorRT из первого этапа
 COPY --from=trt-builder /usr/src/tensorrt /usr/src/tensorrt
 
-# Установка Python-пакета TensorRT
+# Установка ВСЕХ Python-пакетов TensorRT для Python 3.12
 RUN cd /usr/src/tensorrt/python && \
-    pip install --break-system-packages tensorrt-*-cp312-none-linux_x86_64.whl
+    pip install --break-system-packages \
+        tensorrt-10.16.1.11-cp312-none-linux_x86_64.whl \
+        tensorrt_dispatch-10.16.1.11-cp312-none-linux_x86_64.whl \
+        tensorrt_lean-10.16.1.11-cp312-none-linux_x86_64.whl
 
 # Разбиваем ENV на две команды, чтобы избежать предупреждения UndefinedVar
 ENV CUDAV=13.2
@@ -43,5 +47,8 @@ ENV CUDA_INCLUDE_DIRS=/usr/local/cuda-$CUDAV/targets/x86_64-linux/include/ \
     LD_LIBRARY_PATH="/usr/src/tensorrt/lib:$LD_LIBRARY_PATH" \
     TENSORRT_PATH=/usr/src/tensorrt
 
-RUN apt-get update && apt-get install -y wget && apt install -y imagemagick exiftool
+ENV TRTLLM_NO_USAGE_STATS=1
+ENV DO_NOT_TRACK=1
+ENV TELEMETRY_DISABLED=true
+
 WORKDIR /app

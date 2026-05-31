@@ -1,41 +1,24 @@
 FROM cu130:latest
 
-# RUN pip install transformers --verbose --verbose  
-# RUN pip install vllm --verbose --verbose  
-# RUN pip install sentence-transformers --verbose --verbose  
-# RUN pip install huggingface --verbose --verbose  
-# RUN pip install huggingface_hub[hf_transfer] --verbose --verbose  
-# RUN pip install --upgrade pip setuptools wheel packaging --upgrade-strategy eager
-# RUN python3 -m pip install optimum
-# RUN pip install --upgrade --upgrade-strategy eager optimum[onnx]
-# RUN pip install --upgrade --upgrade-strategy eager optimum[onnxruntime]
-# RUN pip install --upgrade --upgrade-strategy eager optimum[onnxruntime-gpu]
-# RUN pip install transformers==4.51.0
-# RUN pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-# RUN pip install accelerate
-
-# RUN pip install transformers -vv || true && \
-#     pip install vllm -vv || true && \
-#     pip install sentence-transformers -vv || true && \
-#     pip install huggingface_hub[hf_transfer] -vv || true && \
-#     pip install --upgrade pip setuptools wheel packaging --upgrade-strategy eager || true && \
-#     python3 -m pip install optimum || true && \
-#     pip install --upgrade --upgrade-strategy eager optimum[onnx] || true && \
-#     pip install --upgrade --upgrade-strategy eager optimum[onnxruntime] || true && \
-#     pip install --upgrade --upgrade-strategy eager optimum[onnxruntime-gpu] || true && \
-#     pip install transformers==4.51.0 || true && \
-#     pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124 || true && \
-#     pip install accelerate || true && \
-#     true
-
-# RUN pip install tree-sitter tree-sitter-languages tree-sitter-python \
-#     -i https://pypi.tuna.tsinghua.edu.cn/simple \
-#     --trusted-host pypi.tuna.tsinghua.edu.cn \
-#     --timeout 120 --retries 5
-
-# RUN apt install wget
-# RUN pip install scrapy  
-
-
-
+# RUN pip install --break-system-packages --no-cache-dir --ignore-installed pip setuptools wheel && \
+#     \
+#     # Ставим PyTorch
+#     pip install --break-system-packages --no-cache-dir torch==2.10.0 torchvision --index-url https://download.pytorch.org/whl/cu130 && \
+#     \
+#     # Фиксируем версии PyTorch и ВСЕХ компонентов TensorRT
+#     CURRENT_TORCH_VERSION=$(python3 -c "import torch; print(torch.__version__)") && \
+#     echo "torch==$CURRENT_TORCH_VERSION" > /tmp/constraints.txt && \
+#     CURRENT_TRT_VERSION=$(python3 -c "import tensorrt; print(tensorrt.__version__)") && \
+#     echo "tensorrt==$CURRENT_TRT_VERSION" >> /tmp/constraints.txt && \
+#     echo "tensorrt_lean==$CURRENT_TRT_VERSION" >> /tmp/constraints.txt && \
+#     echo "tensorrt_dispatch==$CURRENT_TRT_VERSION" >> /tmp/constraints.txt && \
+#     \
+#     # Ставим TensorRT-LLM из индекса NVIDIA, запрещая менять версии TRT и Torch
+#     pip install --break-system-packages --no-cache-dir tensorrt_llm \
+#         --extra-index-url https://pypi.nvidia.com \
+#         -c /tmp/constraints.txt --verbose --verbose && \
+#     \
+#     # Удаляем временные файлы
+#     rm -f /tmp/constraints.txt
+    
 WORKDIR /app
