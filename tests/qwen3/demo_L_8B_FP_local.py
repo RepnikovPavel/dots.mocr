@@ -54,11 +54,13 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 """
 pip install "kernels<0.15"
+e.g. 0.14.1
 """
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--ckptdir',type=str,required=False,default='/mnt/nvme/huggingface')
+    argparser.add_argument('--think',type=int,required=False,default=1)
     args = argparser.parse_args()
     model_path = f"{args.ckptdir}/models--Qwen--Qwen3-8B-FP8/snapshots/main"
     model_name = "Qwen/Qwen3-8B-FP8"
@@ -80,7 +82,7 @@ if __name__ == "__main__":
         messages,
         tokenize=False,
         add_generation_prompt=True,
-        enable_thinking=True # Switches between thinking and non-thinking modes. Default is True.
+        enable_thinking=bool(args.think) # Switches between thinking and non-thinking modes. Default is True.
     )
 
     with torch.no_grad():
